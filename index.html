@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex,nofollow">
+<title>Økonomi</title>
+<style>
+:root{
+  --bg:#f4f5f7; --surface:#ffffff; --text:#16191f; --muted:#6b7280; --line:#e7e9ee;
+  --accent:#2563eb; --on-accent:#ffffff; --plus:#15803d; --minus:#b91c1c; --bar3:#a9c1f7;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0e1116; --surface:#161a21; --text:#e8ebf1; --muted:#9aa3b2; --line:#252b36;
+    --accent:#6aa2ff; --on-accent:#0e1116; --plus:#4ade80; --minus:#f87171; --bar3:#3b5f9e;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+[hidden]{display:none !important}
+.wrap{max-width:960px;margin:0 auto;padding:32px 24px 72px}
+h1{font-size:20px;font-weight:600;margin:0}
+h2{font-size:14px;font-weight:600;margin:0}
+p{margin:0}
+.top{display:flex;align-items:center;justify-content:space-between;min-height:36px}
+section{margin-top:28px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.pad{padding:20px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.btn{font:inherit;font-weight:500;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 14px;min-height:36px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{border-color:var(--accent);opacity:.92}
+.btn.quiet{background:none;border-color:transparent;color:var(--muted)}
+.btn.quiet:hover{color:var(--text);border-color:transparent}
+.btn.danger{background:none;border-color:transparent;color:var(--minus);padding-left:0}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+
+.notice{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:16px;background:var(--surface)}
+.notice.err{border-color:var(--minus);color:var(--minus)}
+.note{color:var(--muted);margin-top:8px;max-width:62ch}
+
+.empty{margin-top:28px;padding:72px 20px;text-align:center}
+.empty h2{font-size:16px}
+#btnFirst{margin-top:20px;padding:10px 20px;min-height:44px;font-size:15px}
+.empty form{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px}
+.empty form input{width:min(320px,100%)}
+.empty .note{margin:16px auto 0}
+#btnRetry{margin-top:16px}
+.empty .btn.quiet{display:block;margin:12px auto 0}
+
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+.cards .card{padding:16px 18px;min-width:0}
+.lbl{color:var(--muted);font-size:13px}
+.val{font-size:24px;font-weight:600;letter-spacing:-.01em;margin-top:4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sub{color:var(--muted);font-size:12px;margin-top:4px;font-variant-numeric:tabular-nums}
+.plus{color:var(--plus)}
+.minus{color:var(--minus)}
+.badge{display:inline-block;border:1px solid var(--muted);border-radius:6px;padding:0 6px;font-size:12px;font-weight:500;color:var(--text);white-space:normal}
+
+.cardhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+#chart{margin-top:16px}
+#chart svg{display:block;width:100%;height:auto;font-variant-numeric:tabular-nums}
+.g-line{stroke:var(--line);stroke-width:1}
+.g-zero{stroke:var(--muted);stroke-width:1}
+.g-text{fill:var(--muted);font-size:11px}
+.b-net{fill:var(--accent)}
+.b-cost{fill:var(--muted)}
+.b-cost.part{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:3 2}
+.b-save{fill:var(--bar3)}
+.l-bal{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.d-bal{fill:var(--accent)}
+.band{fill:var(--text);opacity:0;cursor:default}
+.band.on{opacity:.06}
+.readout{color:var(--muted);font-size:12px;min-height:18px;margin-top:8px;font-variant-numeric:tabular-nums}
+
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:12px 20px;text-align:right;white-space:nowrap;border-top:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+thead th{color:var(--muted);font-weight:500;font-size:13px}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--bg)}
+tfoot td{font-weight:600}
+tfoot tr.avg td{font-weight:400;color:var(--muted)}
+.year{color:var(--muted)}
+
+input,select{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-height:36px;min-width:0}
+input.num{text-align:right;font-variant-numeric:tabular-nums}
+input[aria-invalid=true]{border-color:var(--minus)}
+.field{display:block;margin-top:16px;color:var(--muted);font-size:13px}
+.field input,.field select{display:block;width:100%;margin-top:6px;font-size:14px}
+.field.narrow{max-width:240px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+fieldset{border:0;padding:0;margin:28px 0 0;min-width:0}
+legend{font-weight:600;padding:0}
+.line{display:grid;grid-template-columns:minmax(0,1fr) 120px 36px;gap:8px;margin-top:8px}
+.line .x{padding:0;color:var(--muted);font-size:18px;line-height:1}
+.add{margin-top:10px}
+.savedrow{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:8px;margin-top:8px}
+details{margin-top:12px}
+summary{color:var(--muted);font-size:13px;cursor:pointer;width:max-content}
+.summary{margin-top:28px;border-top:1px solid var(--line);padding-top:16px;font-variant-numeric:tabular-nums}
+.summary div{display:flex;justify-content:space-between;gap:12px;padding:2px 0}
+.summary .big{font-weight:600;font-size:16px}
+.summary .miss{display:block;margin-top:8px}
+
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px)}
+dialog::backdrop{background:rgba(10,12,16,.5)}
+#editor[open]{display:flex}
+#editor form{display:flex;flex-direction:column;min-height:0;flex:1;width:100%}
+.dlghead{padding:18px 20px;border-bottom:1px solid var(--line)}
+.dlghead h2{font-size:16px}
+.dlgbody{padding:4px 20px 24px;overflow-y:auto;flex:1;min-height:0}
+.dlgfoot{display:flex;align-items:center;gap:8px;padding:14px 20px;border-top:1px solid var(--line)}
+.spacer{flex:1}
+#confirm{width:min(400px,calc(100vw - 32px))}
+#confirm p{padding:24px 20px 4px}
+#confirm .dlgfoot{border-top:0;justify-content:flex-end}
+
+@media (max-width:640px){
+  .wrap{padding:20px 16px 56px}
+  .cards{grid-template-columns:repeat(2,1fr);gap:10px}
+  .cards .card{padding:14px}
+  .val{font-size:20px}
+  .pad{padding:16px}
+  /* Telefon: hver måned som en blok med Tilbage øverst til højre, så intet skal rulles sidelæns. */
+  thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  table,tbody,tfoot{display:block}
+  tbody tr,tfoot tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 8px;padding:14px 16px;border-top:1px solid var(--line)}
+  td,td:first-child{display:block;padding:0;border:0;text-align:left}
+  td:nth-child(1){grid-column:1;grid-row:1;font-weight:600}
+  td:nth-child(5){grid-column:2/4;grid-row:1;text-align:right;font-weight:600}
+  td:nth-child(2),td:nth-child(3),td:nth-child(4){font-size:12px;font-weight:400}
+  td:nth-child(2)::before,td:nth-child(3)::before,td:nth-child(4)::before{display:block;color:var(--muted)}
+  td:nth-child(2)::before{content:"Løn"}
+  td:nth-child(3)::before{content:"Omkostninger"}
+  td:nth-child(4)::before{content:"Opsparing"}
+  td:nth-child(6){grid-column:1/-1;font-size:12px;color:var(--muted)}
+  td:nth-child(6)::before{content:"Samlet opsparing "}
+  td:empty{display:none}
+  tfoot tr.avg td:nth-child(n){font-weight:400}
+  tbody tr:hover td{background:none}
+  #editor{width:100vw;max-width:100vw;height:100vh;height:100dvh;max-height:none;margin:0;border:0;border-radius:0}
+  .line{grid-template-columns:minmax(0,1fr) 104px 36px}
+  .savedrow{grid-template-columns:minmax(0,1fr) 104px}
+}
+@media (pointer:coarse){
+  input,select,.field input,.field select{font-size:16px;min-height:40px}
+  .btn{min-height:40px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Økonomi</h1>
+    <button id="btnNew" class="btn primary" hidden>Ny måned</button>
+  </header>
+
+  <div id="login" class="card empty" hidden>
+    <h2>Indsæt adgangsnøgle</h2>
+    <form id="loginForm" autocomplete="off">
+      <input id="tokenInp" type="password" aria-label="Adgangsnøgle" autocomplete="off" spellcheck="false">
+      <button class="btn primary">Åbn</button>
+    </form>
+    <p id="loginErr" class="note minus" hidden></p>
+  </div>
+
+  <div id="loading" class="card empty" hidden>
+    <p id="loadText"></p>
+    <button id="btnRetry" class="btn" hidden>Prøv igen</button>
+  </div>
+
+  <div id="app" hidden>
+  <div id="empty" class="card empty" hidden>
+    <h2>Ingen måneder endnu</h2>
+    <button id="btnFirst" class="btn primary">Tilføj første måned</button>
+    <button id="btnRestoreEmpty" class="btn quiet">Hent sikkerhedskopi</button>
+  </div>
+
+  <main id="main" hidden>
+    <section>
+      <h2 id="curTitle"></h2>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section class="card pad">
+      <div class="cardhead">
+        <h2>Seneste 12 måneder</h2>
+        <div class="legend">
+          <span><i style="background:var(--accent)"></i>Løn</span>
+          <span><i style="background:var(--muted)"></i>Omkostninger</span>
+          <span><i style="background:var(--bar3)"></i>Opsparing</span>
+        </div>
+      </div>
+      <div id="chart"></div>
+      <p id="readout" class="readout"></p>
+    </section>
+
+    <section class="card">
+      <div class="cardhead pad">
+        <h2>Måneder</h2>
+        <select id="yearSel" aria-label="År"></select>
+        <span id="yearTxt" class="year"></span>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Måned</th><th>Løn</th><th>Omkostninger</th><th>Opsparing</th><th>Tilbage</th><th>Samlet opsparing</th></tr></thead>
+          <tbody id="tbody"></tbody>
+          <tfoot id="tfoot"></tfoot>
+        </table>
+      </div>
+      <p id="tblNote" class="note pad" hidden></p>
+    </section>
+
+    <section class="card pad">
+      <h2>Sikkerhedskopi</h2>
+      <p class="note">Dine tal gemmes i et privat lager på GitHub. Gem en sikkerhedskopi en gang imellem, så du også selv har dem.</p>
+      <div class="btnrow">
+        <button id="btnBackup" class="btn">Gem sikkerhedskopi</button>
+        <button id="btnRestore" class="btn">Hent sikkerhedskopi</button>
+        <button id="btnCsv" class="btn">Eksportér CSV</button>
+      </div>
+      <label class="field narrow">Opsparing før første måned
+        <input id="startBal" class="num" inputmode="decimal" autocomplete="off">
+      </label>
+      <div class="btnrow">
+        <button id="btnForget" class="btn quiet" style="padding-left:0">Fjern adgangsnøglen fra denne enhed</button>
+      </div>
+    </section>
+  </main>
+  </div>
+</div>
+
+<input type="file" id="file" accept="application/json,.json" hidden>
+
+<dialog id="editor" aria-labelledby="edTitle">
+  <form id="edForm" novalidate autocomplete="off">
+    <div class="dlghead"><h2 id="edTitle"></h2></div>
+    <div class="dlgbody">
+      <div class="row2">
+        <label class="field">Måned <select id="edMonth"></select></label>
+        <label class="field">År <input id="edYear" inputmode="numeric" maxlength="4"></label>
+      </div>
+      <label class="field">Løn udbetalt
+        <input id="edNet" class="num" inputmode="decimal">
+      </label>
+      <details id="edMore">
+        <summary>Bruttoløn og skat</summary>
+        <div class="row2">
+          <label class="field">Bruttoløn <input id="edGross" class="num" inputmode="decimal"></label>
+          <label class="field">Skat <input id="edTax" class="num" inputmode="decimal"></label>
+        </div>
+      </details>
+
+      <fieldset>
+        <legend>Faste omkostninger</legend>
+        <div id="edFixed"></div>
+        <button type="button" class="btn add" data-add="edFixed">Tilføj linje</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>Øvrige omkostninger</legend>
+        <div id="edOther"></div>
+        <button type="button" class="btn add" data-add="edOther">Tilføj linje</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>Opsparing</legend>
+        <div class="savedrow">
+          <select id="edDir" aria-label="Retning">
+            <option value="in">Sat til side</option>
+            <option value="out">Hævet</option>
+          </select>
+          <input id="edSaved" class="num" inputmode="decimal" aria-label="Beløb">
+        </div>
+      </fieldset>
+
+      <div class="summary" id="edSum"></div>
+      <p id="edErr" class="notice err" hidden></p>
+    </div>
+    <div class="dlgfoot">
+      <button type="button" id="edDelete" class="btn danger">Slet måned</button>
+      <span class="spacer"></span>
+      <button type="button" id="edCancel" class="btn">Annuller</button>
+      <button type="submit" id="edSave" class="btn primary">Gem</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirm">
+  <p id="cText"></p>
+  <div class="dlgfoot">
+    <button type="button" id="cNo" class="btn">Annuller</button>
+    <button type="button" id="cOk" class="btn primary"></button>
+  </div>
+</dialog>
+
+<datalist id="names"></datalist>
+
+<script>
+(function(){
+'use strict';
+
+var REPO='djay-fabz/oekonomi-data',FILE='oekonomi.json',API='https://api.github.com';
+var TOKEN_KEY='oekonomi-token';
+var MONTHS=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
+var SHORT=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+var NBSP=' ';
+
+var token=null,sha=null,busy=false,loadedAt=0;
+var state=blank();
+var selYear=null;
+var origYm=null;
+
+function $(id){return document.getElementById(id);}
+function el(tag,props){
+  var e=document.createElement(tag),k;
+  if(props) for(k in props){
+    if(k==='class') e.className=props[k];
+    else if(k==='text') e.textContent=props[k];
+    else if(props[k]!=null&&props[k]!==false) e.setAttribute(k,props[k]);
+  }
+  for(var i=2;i<arguments.length;i++) if(arguments[i]!=null) e.append(arguments[i]);
+  return e;
+}
+function svg(tag,attrs){
+  var e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  for(var k in attrs) e.setAttribute(k,attrs[k]);
+  return e;
+}
+
+/* ---------- Data ---------- */
+function blank(){return {version:1,startBalance:0,months:[]};}
+
+// Alle beløb er hele øre, så summer går præcist op.
+function amount(v){
+  if(v===null||v===undefined) return null;
+  if(!Number.isSafeInteger(v)) throw new Error('beløb');
+  return v;
+}
+function normalize(d){
+  var fejl='Filen er ikke en sikkerhedskopi fra dette værktøj.';
+  if(!d||typeof d!=='object'||!Array.isArray(d.months)) throw new Error(fejl);
+  var seen={};
+  var months=d.months.map(function(m){
+    if(!m||typeof m.ym!=='string'||!/^\d{4}-(0[1-9]|1[0-2])$/.test(m.ym)||seen[m.ym]) throw new Error(fejl);
+    seen[m.ym]=true;
+    var lines=function(a){
+      return (Array.isArray(a)?a:[]).map(function(l){
+        return {name:String(l&&l.name!=null?l.name:'').trim(),amount:amount(l?l.amount:null)};
+      }).filter(function(l){return l.name;});
+    };
+    try{
+      return {ym:m.ym,net:amount(m.net),gross:amount(m.gross),tax:amount(m.tax),fixed:lines(m.fixed),other:lines(m.other),saved:amount(m.saved)};
+    }catch(e){throw new Error(fejl);}
+  });
+  months.sort(function(a,b){return a.ym<b.ym?-1:1;});
+  return {
+    version:1,
+    startBalance:Number.isSafeInteger(d.startBalance)?d.startBalance:0,
+    months:months
+  };
+}
+function fileData(s){return {app:'oekonomi',version:1,enhed:'øre',startBalance:s.startBalance,months:s.months};}
+
+/* ---------- GitHub: tallene ligger i én fil i et privat repo ---------- */
+function getToken(){try{return localStorage.getItem(TOKEN_KEY);}catch(e){return null;}}
+function keepToken(v){try{if(v) localStorage.setItem(TOKEN_KEY,v);else localStorage.removeItem(TOKEN_KEY);}catch(e){}}
+function fail(kind){var e=new Error(kind);e.kind=kind;return e;}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+// Læsninger prøves igen ved netfejl og 5xx. Skrivninger prøves ikke igen her, de håndteres i commit().
+async function gh(path,method,body){
+  var call=function(){
+    var headers={Authorization:'Bearer '+token,Accept:'application/vnd.github+json'};
+    if(body) headers['Content-Type']='application/json';
+    return fetch(API+path,{method:method||'GET',cache:'no-store',headers:headers,body:body?JSON.stringify(body):undefined});
+  };
+  for(var i=0;;i++){
+    var last=!!body||i>=2,r;
+    try{r=await call();}catch(e){if(last) throw fail('net');await sleep(600*Math.pow(2,i));continue;}
+    if(r.status<500||last) return r;
+    await sleep(600*Math.pow(2,i));
+  }
+}
+function b64encode(text){
+  var s='';
+  new TextEncoder().encode(text).forEach(function(x){s+=String.fromCharCode(x);});
+  return btoa(s);
+}
+function b64decode(b){
+  var bin=atob(b.replace(/\s/g,'')),u=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+  return new TextDecoder().decode(u);
+}
+var FILE_PATH='/repos/'+REPO+'/contents/'+FILE;
+async function fetchRemote(){
+  var r=await gh(FILE_PATH+'?t='+Date.now());
+  if(r.status===401) throw fail('token');
+  if(r.status===404){
+    // 404 betyder enten "ingen fil endnu" eller "ingen adgang til repoet". Repo-kaldet afgør hvilken.
+    var rr=await gh('/repos/'+REPO);
+    if(rr.status===401) throw fail('token');
+    if(!rr.ok) throw fail('access');
+    return {data:blank(),sha:null};
+  }
+  if(r.status===403) throw fail('access');
+  if(!r.ok) throw fail('other');
+  var j=await r.json();
+  try{return {data:normalize(JSON.parse(b64decode(j.content))),sha:j.sha};}
+  catch(e){throw fail('corrupt');}
+}
+// Gemmer en ændring. Er filen ændret et andet sted i mellemtiden (409/422), hentes den nyeste, og ændringen lægges oven på.
+async function commit(mutate){
+  for(var i=0;i<3;i++){
+    var next=JSON.parse(JSON.stringify(state));
+    mutate(next);
+    next.months.sort(function(a,b){return a.ym<b.ym?-1:1;});
+    var body={message:'Opdateret '+today(),content:b64encode(JSON.stringify(fileData(next),null,2)+'\n')};
+    if(sha) body.sha=sha;
+    var r=await gh(FILE_PATH,'PUT',body);
+    if(r.ok){
+      var j=await r.json();
+      sha=j.content.sha;
+      state=next;
+      loadedAt=Date.now();
+      return;
+    }
+    if(r.status===401) throw fail('token');
+    if(r.status===409||r.status===422){
+      var rem=await fetchRemote();
+      state=rem.data;
+      sha=rem.sha;
+      continue;
+    }
+    if(r.status===403||r.status===404) throw fail('access');
+    throw fail('other');
+  }
+  throw fail('other');
+}
+// Returnerer null, når det er gemt, ellers en fejltekst.
+async function save(mutate,btn){
+  if(busy) return 'Vent et øjeblik, og prøv igen.';
+  busy=true;
+  var label=btn?btn.textContent:'';
+  if(btn){btn.textContent='Gemmer \u2026';btn.disabled=true;}
+  try{await commit(mutate);return null;}
+  catch(e){
+    var k=e&&e.kind;
+    return k==='token'?'Adgangsnøglen blev afvist. Den kan være udløbet.':
+      k==='access'?'Adgangsnøglen må ikke gemme. Den skal have skriveadgang.':
+      k==='corrupt'?'Filen med tallene kan ikke læses.':
+      'Kunne ikke gemme. Tjek forbindelsen, og prøv igen.';
+  }
+  finally{
+    busy=false;
+    if(btn){btn.textContent=label;btn.disabled=false;}
+  }
+}
+function show(view,msg){
+  $('login').hidden=view!=='login';
+  $('loading').hidden=view!=='loading'&&view!=='error';
+  $('app').hidden=view!=='app';
+  if(view!=='app') $('btnNew').hidden=true;
+  if(view==='login'){
+    $('loginErr').textContent=msg||'';
+    $('loginErr').hidden=!msg;
+    $('tokenInp').value='';
+  }
+  if(view==='loading'){$('loadText').textContent='Henter \u2026';$('btnRetry').hidden=true;}
+  if(view==='error'){$('loadText').textContent=msg;$('btnRetry').hidden=false;}
+}
+// Henter tallene med den nøgle, der står i token. Nøglen gemmes først på enheden, når den har virket.
+async function enter(){
+  show('loading');
+  try{
+    var rem=await fetchRemote();
+    state=rem.data;
+    sha=rem.sha;
+    loadedAt=Date.now();
+  }catch(e){
+    var k=e&&e.kind;
+    if(k==='token'||k==='access'){
+      token=null;
+      keepToken(null);
+      show('login',k==='token'?'Adgangsnøglen blev afvist. Den kan være udløbet.':'Adgangsnøglen har ikke adgang til tallene.');
+    }
+    else show('error',k==='corrupt'?'Filen med tallene kan ikke læses.':'Kunne ikke hente tallene. Tjek forbindelsen.');
+    return;
+  }
+  keepToken(token);
+  show('app');
+  render();
+}
+
+/* ---------- Tal og datoer ---------- */
+function parseAmount(s){
+  s=String(s).replace(/\s/g,'').replace(/kr\.?$/i,'');
+  if(s==='') return {empty:true};
+  var m=/^(\d{1,3}(?:\.\d{3})+|\d+)(?:,(\d{1,2}))?$/.exec(s);
+  if(!m) return {error:true};
+  var v=parseInt(m[1].replace(/\./g,''),10)*100+(m[2]?parseInt((m[2]+'0').slice(0,2),10):0);
+  if(!Number.isSafeInteger(v)) return {error:true};
+  return {value:v};
+}
+function num(v){
+  var a=Math.abs(v),kr=Math.floor(a/100),ore=a%100;
+  var s=String(kr).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  if(ore) s+=','+(ore<10?'0':'')+ore;
+  return (v<0?'−':'')+s;
+}
+function kr(v){return v===null||v===undefined?'–':num(v)+NBSP+'kr.';}
+function ymParts(ym){return [parseInt(ym.slice(0,4),10),parseInt(ym.slice(5),10)];}
+function ymName(ym){var p=ymParts(ym);return MONTHS[p[1]-1]+' '+p[0];}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function pad2(n){return (n<10?'0':'')+n;}
+function ymAdd(ym,n){var p=ymParts(ym),i=p[0]*12+p[1]-1+n;return Math.floor(i/12)+'-'+pad2(i%12+1);}
+function ymNow(){var d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1);}
+
+/* ---------- Beregning ---------- */
+function calc(m){
+  var all=m.fixed.concat(m.other);
+  var sum=function(a){return a.reduce(function(t,l){return t+(l.amount===null?0:l.amount);},0);};
+  var missing=[];
+  if(m.net===null) missing.push('Løn');
+  all.forEach(function(l){if(l.amount===null) missing.push(l.name);});
+  if(m.saved===null) missing.push('Opsparing');
+  var fixed=sum(m.fixed),other=sum(m.other),complete=missing.length===0;
+  return {
+    fixed:fixed,other:other,costs:fixed+other,
+    costsOk:!all.some(function(l){return l.amount===null;}),
+    missing:missing,complete:complete,
+    left:complete?m.net-fixed-other-m.saved:null
+  };
+}
+// Samlet opsparing efter hver måned. Mangler en måneds opsparing, er saldoen ukendt derfra.
+function balances(){
+  var out={},bal=state.startBalance,known=true;
+  state.months.forEach(function(m){
+    if(m.saved===null) known=false;
+    if(known){bal+=m.saved;out[m.ym]=bal;}else out[m.ym]=null;
+  });
+  return out;
+}
+function missText(list){
+  var s=list.slice(0,3).join(', ');
+  if(list.length>3) s+=' +'+(list.length-3);
+  return 'Mangler: '+s;
+}
+
+/* ---------- Visning ---------- */
+function render(){
+  var has=state.months.length>0;
+  $('empty').hidden=has;
+  $('main').hidden=!has;
+  $('btnNew').hidden=!has;
+  if(!has) return;
+  var bal=balances();
+  renderCards(bal);
+  renderChart(bal);
+  renderTable(bal);
+  renderData();
+}
+
+function card(label,value,cls,sub){
+  return el('div',{class:'card'},
+    el('div',{class:'lbl',text:label}),
+    el('div',{class:'val'+(cls?' '+cls:''),text:kr(value)}),
+    sub?el('div',{class:'sub'},sub):null);
+}
+function sign(v){return v>0?'plus':v<0?'minus':'';}
+function renderCards(bal){
+  var now=ymNow();
+  var m=state.months.filter(function(x){return x.ym===now;})[0]||state.months[state.months.length-1];
+  var c=calc(m);
+  $('curTitle').textContent=cap(ymName(m.ym));
+  var pay=[];
+  if(m.gross!==null) pay.push('Brutto '+kr(m.gross));
+  if(m.tax!==null) pay.push('Skat '+kr(m.tax));
+  var costSub=c.costsOk?'Faste '+kr(c.fixed)+' · Øvrige '+kr(c.other):el('span',{class:'badge',text:'Mangler tal'});
+  $('cards').replaceChildren(
+    card('Løn',m.net,'',pay.join(' · ')),
+    card('Omkostninger',c.costs,'',costSub),
+    card('Opsparing',m.saved,'','Samlet '+kr(bal[m.ym])),
+    card('Tilbage',c.left,c.left===null?'':sign(c.left),c.complete?null:el('span',{class:'badge',text:missText(c.missing)}))
+  );
+}
+
+function niceStep(x){
+  var p=Math.pow(10,Math.floor(Math.log10(x))),f=x/p;
+  return (f<=1?1:f<=2?2:f<=5?5:10)*p;
+}
+function scale(min,max,n){
+  if(min===max){
+    if(min===0) max=100000;
+    else{var d=Math.abs(min)*0.1;min-=d;max+=d;}
+  }
+  var step=Math.max(100,niceStep((max-min)/n));
+  var lo=Math.floor(min/step)*step,hi=Math.ceil(max/step)*step,ticks=[];
+  for(var t=lo;t<=hi+step/2;t+=step) ticks.push(Math.round(t));
+  return {lo:lo,hi:hi,ticks:ticks};
+}
+
+var chartWidth=0;
+function renderChart(bal){
+  var box=$('chart');
+  var W=Math.max(280,Math.floor(box.clientWidth));
+  chartWidth=W;
+  var last=state.months[state.months.length-1].ym;
+  var byYm={};
+  state.months.forEach(function(m){byYm[m.ym]=m;});
+  var rows=[];
+  for(var i=11;i>=0;i--){
+    var ym=ymAdd(last,-i),m=byYm[ym];
+    rows.push(m?{ym:ym,m:m,c:calc(m),bal:bal[ym]}:{ym:ym});
+  }
+  var bv=[0],lv=[];
+  rows.forEach(function(r){
+    if(!r.m) return;
+    if(r.m.net!==null) bv.push(r.m.net);
+    bv.push(r.c.costs);
+    if(r.m.saved!==null) bv.push(r.m.saved);
+    if(r.bal!==null) lv.push(r.bal);
+  });
+  var sB=scale(Math.min.apply(null,bv),Math.max.apply(null,bv),4);
+  var sL=lv.length?scale(Math.min.apply(null,lv),Math.max.apply(null,lv),3):null;
+
+  var chars=0;
+  sB.ticks.concat(sL?sL.ticks:[]).forEach(function(t){chars=Math.max(chars,num(t).length);});
+  var ml=Math.ceil(chars*6.3)+12,mr=4;
+  var top=8,H1=170,labY=top+H1+18,yearY=labY+14,titleY=yearY+28,lt=titleY+14,H2=96,H=lt+H2+8;
+  var gw=(W-ml-mr)/12;
+  var s=svg('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'img','aria-label':'Løn, omkostninger og opsparing de seneste 12 måneder samt samlet opsparing'});
+  var add=function(tag,attrs,text){var e=svg(tag,attrs);if(text!=null) e.textContent=text;s.appendChild(e);return e;};
+  var yB=function(v){return top+H1-(v-sB.lo)/(sB.hi-sB.lo)*H1;};
+  var yL=function(v){return lt+H2-(v-sL.lo)/(sL.hi-sL.lo)*H2;};
+
+  sB.ticks.forEach(function(t){
+    var y=Math.round(yB(t))+0.5;
+    add('line',{x1:ml,x2:W-mr,y1:y,y2:y,class:t===0&&sB.lo<0?'g-zero':'g-line'});
+    add('text',{x:ml-8,y:y+4,'text-anchor':'end',class:'g-text'},num(t));
+  });
+
+  var bw=Math.max(3,Math.min(14,Math.floor((gw-8)/3))),gap=bw<6?1:2;
+  var bar=function(x,v,cls){
+    var y0=yB(0),y1=yB(v),h=Math.abs(y1-y0);
+    if(v!==0&&h<1) h=1;
+    add('rect',{x:x,y:Math.min(y0,y1),width:bw,height:h,rx:Math.min(2,bw/2),class:cls});
+  };
+  var yearShown=0;
+  rows.forEach(function(r,i){
+    var cx=ml+i*gw+gw/2,p=ymParts(r.ym);
+    // Smal skærm: kun hver anden måned får navn, så de ikke støder sammen.
+    if(gw>=28||i%2===1){
+      add('text',{x:cx,y:labY,'text-anchor':'middle',class:'g-text'},SHORT[p[1]-1]);
+      if(p[0]!==yearShown){add('text',{x:cx,y:yearY,'text-anchor':'middle',class:'g-text'},p[0]);yearShown=p[0];}
+    }
+    if(!r.m) return;
+    var x=cx-(3*bw+2*gap)/2;
+    if(r.m.net!==null) bar(x,r.m.net,'b-net');
+    bar(x+bw+gap,r.c.costs,'b-cost'+(r.c.costsOk?'':' part'));
+    if(r.m.saved!==null) bar(x+2*(bw+gap),r.m.saved,'b-save');
+  });
+
+  add('text',{x:ml,y:titleY,class:'g-text'},'Samlet opsparing');
+  if(sL){
+    sL.ticks.forEach(function(t){
+      var y=Math.round(yL(t))+0.5;
+      add('line',{x1:ml,x2:W-mr,y1:y,y2:y,class:'g-line'});
+      add('text',{x:ml-8,y:y+4,'text-anchor':'end',class:'g-text'},num(t));
+    });
+    var pts=[];
+    rows.forEach(function(r,i){if(r.m&&r.bal!==null) pts.push([ml+i*gw+gw/2,yL(r.bal)]);});
+    if(pts.length>1) add('path',{d:'M'+pts.map(function(p){return p[0].toFixed(1)+' '+p[1].toFixed(1);}).join('L'),class:'l-bal'});
+    pts.forEach(function(p){add('circle',{cx:p[0],cy:p[1],r:3,class:'d-bal'});});
+  }
+
+  var bands=[];
+  rows.forEach(function(r,i){
+    var b=add('rect',{x:ml+i*gw,y:top,width:gw,height:H-top-4,class:'band'});
+    bands.push(b);
+    var show=function(){
+      bands.forEach(function(o){o.setAttribute('class','band');});
+      b.setAttribute('class','band on');
+      $('readout').textContent=readout(r);
+    };
+    b.addEventListener('pointerenter',show);
+    b.addEventListener('click',show);
+  });
+  s.addEventListener('pointerleave',function(e){
+    if(e.pointerType!=='mouse') return;
+    bands.forEach(function(o){o.setAttribute('class','band');});
+    $('readout').textContent='';
+  });
+  $('readout').textContent='';
+  box.replaceChildren(s);
+}
+function readout(r){
+  var t=cap(ymName(r.ym));
+  if(!r.m) return t+' · Ingen tal';
+  return t+' · Løn '+kr(r.m.net)+' · Omkostninger '+kr(r.c.costs)+(r.c.costsOk?'':' (mangler tal)')+
+    ' · Opsparing '+kr(r.m.saved)+' · Samlet opsparing '+kr(r.bal);
+}
+
+function td(text,cls){return el('td',{class:cls||null,text:text});}
+function renderTable(bal){
+  var years=[];
+  state.months.forEach(function(m){var y=m.ym.slice(0,4);if(years.indexOf(y)<0) years.push(y);});
+  years.reverse();
+  if(years.indexOf(selYear)<0) selYear=years[0];
+  var sel=$('yearSel');
+  sel.replaceChildren.apply(sel,years.map(function(y){return el('option',{value:y,text:y});}));
+  sel.value=selYear;
+  sel.hidden=years.length<2;
+  $('yearTxt').hidden=years.length>1;
+  $('yearTxt').textContent=selYear;
+
+  var list=state.months.filter(function(m){return m.ym.slice(0,4)===selYear;}).reverse();
+  var tot={net:0,costs:0,saved:0,left:0},n=0,skipped=0;
+  var body=$('tbody');
+  body.replaceChildren.apply(body,list.map(function(m){
+    var c=calc(m);
+    if(c.complete){n++;tot.net+=m.net;tot.costs+=c.costs;tot.saved+=m.saved;tot.left+=c.left;}
+    else skipped++;
+    var left=c.complete?td(kr(c.left),sign(c.left)):el('td',null,el('span',{class:'badge',title:missText(c.missing),text:'Mangler tal'}));
+    var tr=el('tr',{tabindex:0,'data-ym':m.ym,'aria-label':'Ret '+ymName(m.ym)},
+      td(cap(MONTHS[ymParts(m.ym)[1]-1])),td(kr(m.net)),td(kr(c.costs)+(c.costsOk?'':' *')),td(kr(m.saved)),left,td(kr(bal[m.ym])));
+    tr.addEventListener('click',function(){openEditor(m,false);});
+    tr.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openEditor(m,false);}});
+    return tr;
+  }));
+  var avg=function(v){return n?kr(Math.round(v/n/100)*100):'–';};
+  var sumv=function(v){return n?kr(v):'–';};
+  $('tfoot').replaceChildren(
+    el('tr',null,td('I alt '+selYear),td(sumv(tot.net)),td(sumv(tot.costs)),td(sumv(tot.saved)),td(sumv(tot.left),n?sign(tot.left):''),td('')),
+    el('tr',{class:'avg'},td('Snit pr. måned'),td(avg(tot.net)),td(avg(tot.costs)),td(avg(tot.saved)),td(avg(tot.left)),td(''))
+  );
+  var note=$('tblNote');
+  note.hidden=!skipped;
+  note.textContent=skipped===1?'1 måned mangler tal og er ikke med i I alt og Snit.':skipped+' måneder mangler tal og er ikke med i I alt og Snit.';
+}
+
+function renderData(){
+  var sb=$('startBal');
+  if(document.activeElement!==sb){sb.value=num(state.startBalance);sb.setAttribute('aria-invalid','false');}
+  var seen={},names=[];
+  state.months.forEach(function(m){m.fixed.concat(m.other).forEach(function(l){if(!seen[l.name]){seen[l.name]=1;names.push(l.name);}});});
+  var dl=$('names');
+  dl.replaceChildren.apply(dl,names.map(function(nm){return el('option',{value:nm});}));
+}
+
+/* ---------- Ret en måned ---------- */
+function inp(v){return v===null?'':num(Math.abs(v));}
+function addLine(boxId,name,amt,focus){
+  var n=el('input',{class:'name',list:'names','aria-label':'Navn',placeholder:'Navn',value:name||''});
+  var a=el('input',{class:'num',inputmode:'decimal','aria-label':'Beløb',value:amt===undefined?'':inp(amt)});
+  var x=el('button',{type:'button',class:'btn quiet x','aria-label':'Fjern linje',text:'×'});
+  var row=el('div',{class:'line'},n,a,x);
+  x.addEventListener('click',function(){row.remove();updateSummary();});
+  $(boxId).appendChild(row);
+  if(focus) n.focus();
+}
+function openEditor(m,isNew){
+  origYm=isNew?null:m.ym;
+  $('edTitle').textContent=isNew?'Ny måned':cap(ymName(m.ym));
+  var p=ymParts(m.ym);
+  $('edMonth').value=p[1];
+  $('edYear').value=p[0];
+  $('edNet').value=inp(m.net);
+  $('edGross').value=inp(m.gross);
+  $('edTax').value=inp(m.tax);
+  $('edMore').open=m.gross!==null||m.tax!==null;
+  $('edFixed').replaceChildren();
+  $('edOther').replaceChildren();
+  m.fixed.forEach(function(l){addLine('edFixed',l.name,l.amount);});
+  m.other.forEach(function(l){addLine('edOther',l.name,l.amount);});
+  $('edDir').value=m.saved!==null&&m.saved<0?'out':'in';
+  $('edSaved').value=inp(m.saved);
+  $('edDelete').hidden=isNew;
+  $('edErr').hidden=true;
+  $('editor').querySelectorAll('[aria-invalid]').forEach(function(i){i.setAttribute('aria-invalid','false');});
+  updateSummary();
+  $('editor').showModal();
+  $('editor').querySelector('.dlgbody').scrollTop=0;
+  if(isNew) $('edNet').focus();
+}
+// Læser formularen. mark=true markerer felter med fejl.
+function collect(mark){
+  var bad=false;
+  var flag=function(i,isBad){if(mark) i.setAttribute('aria-invalid',isBad?'true':'false');};
+  var field=function(id){
+    var i=$(id),r=parseAmount(i.value);
+    flag(i,!!r.error);
+    if(r.error){bad=true;return null;}
+    return r.empty?null:r.value;
+  };
+  var y=$('edYear').value.trim(),yOk=/^\d{4}$/.test(y)&&+y>=2000&&+y<=2100;
+  flag($('edYear'),!yOk);
+  if(!yOk) bad=true;
+  var lines=function(boxId){
+    var out=[];
+    $(boxId).querySelectorAll('.line').forEach(function(row){
+      var n=row.querySelector('.name'),a=row.querySelector('.num');
+      var name=n.value.trim(),r=parseAmount(a.value);
+      var noName=!name&&!r.empty;
+      flag(a,!!r.error);
+      flag(n,noName);
+      if(r.error||noName) bad=true;
+      if(name) out.push({name:name,amount:r.error||r.empty?null:r.value});
+    });
+    return out;
+  };
+  var net=field('edNet'),gross=field('edGross'),tax=field('edTax'),saved=field('edSaved');
+  if(saved&&$('edDir').value==='out') saved=-saved;
+  return {bad:bad,m:{ym:yOk?y+'-'+pad2(+$('edMonth').value):null,net:net,gross:gross,tax:tax,fixed:lines('edFixed'),other:lines('edOther'),saved:saved}};
+}
+function updateSummary(){
+  var c=calc(collect(false).m);
+  var left=el('span',{class:c.left===null?'':sign(c.left),text:kr(c.left)});
+  $('edSum').replaceChildren(
+    el('div',null,el('span',{text:'Omkostninger'}),el('span',{text:kr(c.costs)})),
+    el('div',{class:'big'},el('span',{text:'Tilbage'}),left),
+    c.complete?null:el('span',{class:'badge miss',text:missText(c.missing)})
+  );
+}
+function showErr(text){var e=$('edErr');e.textContent=text;e.hidden=false;e.scrollIntoView({block:'nearest'});}
+async function saveEditor(e){
+  e.preventDefault();
+  if(busy) return;
+  var r=collect(true),m=r.m,o=origYm;
+  if(r.bad){
+    showErr('Ret de markerede felter. Beløb skrives som 12.500 eller 12.500,50.');
+    return;
+  }
+  if(m.ym!==origYm&&state.months.some(function(x){return x.ym===m.ym;})){
+    showErr(cap(ymName(m.ym))+' findes allerede.');
+    return;
+  }
+  var err=await save(function(s){
+    s.months=s.months.filter(function(x){return x.ym!==o&&x.ym!==m.ym;});
+    s.months.push(m);
+  },$('edSave'));
+  if(err){showErr(err);return;}
+  selYear=m.ym.slice(0,4);
+  $('editor').close();
+  render();
+}
+function newMonth(){
+  var last=state.months[state.months.length-1];
+  var empty=function(nm){return {name:nm,amount:null};};
+  var m={net:null,gross:null,tax:null,saved:null};
+  if(last){
+    m.ym=ymAdd(last.ym,1);
+    m.fixed=last.fixed.map(function(l){return {name:l.name,amount:l.amount};});
+    m.other=last.other.map(function(l){return empty(l.name);});
+  }else{
+    m.ym=ymNow();
+    m.fixed=['Husleje','Forsikring','Abonnementer'].map(empty);
+    m.other=['Mad','Transport','Andet'].map(empty);
+  }
+  openEditor(m,true);
+}
+
+/* ---------- Dialog ---------- */
+function ask(text,okLabel,single){
+  return new Promise(function(resolve){
+    var d=$('confirm');
+    $('cText').textContent=text;
+    $('cOk').textContent=okLabel;
+    $('cNo').hidden=!!single;
+    var done=function(v){
+      $('cOk').onclick=$('cNo').onclick=d.oncancel=null;
+      d.close();
+      resolve(v);
+    };
+    $('cOk').onclick=function(){done(true);};
+    $('cNo').onclick=function(){done(false);};
+    d.oncancel=function(ev){ev.preventDefault();done(false);};
+    d.showModal();
+  });
+}
+
+/* ---------- Sikkerhedskopi og eksport ---------- */
+function download(name,text,type){
+  var url=URL.createObjectURL(new Blob([text],{type:type}));
+  var a=el('a',{href:url,download:name});
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},2000);
+}
+function today(){var d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function backup(){
+  var out=fileData(state);
+  out.gemt=new Date().toISOString();
+  download('oekonomi-sikkerhedskopi-'+today()+'.json',JSON.stringify(out,null,2),'application/json');
+}
+function restore(file){
+  var reader=new FileReader();
+  reader.onerror=function(){ask('Filen kunne ikke læses.','OK',true);};
+  reader.onload=function(){
+    var d,next;
+    try{d=JSON.parse(reader.result);next=normalize(d);}
+    catch(e){ask('Filen er ikke en sikkerhedskopi fra dette værktøj.','OK',true);return;}
+    var n=next.months.length;
+    var go=async function(){
+      var err=await save(function(s){s.startBalance=next.startBalance;s.months=next.months;});
+      if(err){ask(err,'OK',true);return;}
+      selYear=null;
+      render();
+    };
+    if(!state.months.length){go();return;}
+    ask('Erstat alle tal med sikkerhedskopien ('+n+(n===1?' måned':' måneder')+')?','Erstat').then(function(ok){if(ok) go();});
+  };
+  reader.readAsText(file);
+}
+function csvNum(v){
+  if(v===null||v===undefined) return '';
+  var a=Math.abs(v),ore=a%100;
+  return (v<0?'-':'')+Math.floor(a/100)+(ore?','+pad2(ore):'');
+}
+function csvText(s){
+  s=String(s);
+  if(/^[=+\-@]/.test(s)) s="'"+s;
+  return /[;"\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+}
+function exportCsv(){
+  var bal=balances(),cols=[],seen={};
+  state.months.forEach(function(m){
+    [['fixed','Fast: '],['other','Øvrig: ']].forEach(function(g){
+      m[g[0]].forEach(function(l){
+        var k=g[0]+'|'+l.name;
+        if(!seen[k]){seen[k]=1;cols.push({group:g[0],name:l.name,head:g[1]+l.name});}
+      });
+    });
+  });
+  var rows=[['Måned','Løn udbetalt','Bruttoløn','Skat','Faste omkostninger','Øvrige omkostninger','Omkostninger i alt','Opsparing','Tilbage','Samlet opsparing']
+    .concat(cols.map(function(c){return c.head;})).map(csvText)];
+  state.months.forEach(function(m){
+    var c=calc(m);
+    var r=[m.ym,csvNum(m.net),csvNum(m.gross),csvNum(m.tax),csvNum(c.fixed),csvNum(c.other),csvNum(c.costs),csvNum(m.saved),csvNum(c.left),csvNum(bal[m.ym])];
+    cols.forEach(function(col){
+      var hits=m[col.group].filter(function(l){return l.name===col.name;});
+      if(!hits.length||hits.some(function(l){return l.amount===null;})){r.push('');return;}
+      r.push(csvNum(hits.reduce(function(t,l){return t+l.amount;},0)));
+    });
+    rows.push(r);
+  });
+  download('oekonomi-'+today()+'.csv','﻿'+rows.map(function(r){return r.join(';');}).join('\r\n')+'\r\n','text/csv;charset=utf-8');
+}
+
+/* ---------- Start ---------- */
+MONTHS.forEach(function(nm,i){$('edMonth').appendChild(el('option',{value:i+1,text:cap(nm)}));});
+$('btnNew').addEventListener('click',newMonth);
+$('btnFirst').addEventListener('click',newMonth);
+$('edForm').addEventListener('submit',saveEditor);
+$('edForm').addEventListener('input',updateSummary);
+$('edCancel').addEventListener('click',function(){$('editor').close();});
+$('edDelete').addEventListener('click',function(){
+  var ym=origYm;
+  ask('Slet '+ymName(ym)+'?','Slet').then(async function(ok){
+    if(!ok) return;
+    var err=await save(function(s){s.months=s.months.filter(function(x){return x.ym!==ym;});},$('edDelete'));
+    if(err){showErr(err);return;}
+    $('editor').close();
+    render();
+  });
+});
+document.querySelectorAll('[data-add]').forEach(function(b){
+  b.addEventListener('click',function(){addLine(b.getAttribute('data-add'),'',undefined,true);});
+});
+$('yearSel').addEventListener('change',function(){selYear=this.value;renderTable(balances());});
+$('btnBackup').addEventListener('click',backup);
+$('btnCsv').addEventListener('click',exportCsv);
+$('btnRestore').addEventListener('click',function(){$('file').click();});
+$('btnRestoreEmpty').addEventListener('click',function(){$('file').click();});
+$('file').addEventListener('change',function(){
+  if(this.files&&this.files[0]) restore(this.files[0]);
+  this.value='';
+});
+$('startBal').addEventListener('change',async function(){
+  var r=parseAmount(this.value),v=r.empty?0:r.value;
+  this.setAttribute('aria-invalid',r.error?'true':'false');
+  if(r.error) return;
+  this.blur();
+  var err=await save(function(s){s.startBalance=v;});
+  if(err) await ask(err,'OK',true);
+  render();
+});
+$('loginForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var v=$('tokenInp').value.trim();
+  if(!v) return;
+  token=v;
+  enter();
+});
+$('btnRetry').addEventListener('click',enter);
+$('btnForget').addEventListener('click',function(){
+  ask('Fjern adgangsnøglen fra denne enhed?','Fjern').then(function(ok){
+    if(!ok) return;
+    token=null;
+    sha=null;
+    keepToken(null);
+    state=blank();
+    show('login');
+  });
+});
+// Kommer man tilbage til fanen efter et stykke tid, hentes de nyeste tal (fx tastet på en anden enhed).
+document.addEventListener('visibilitychange',function(){
+  var open=function(){return busy||$('app').hidden||document.querySelector('dialog[open]');};
+  if(document.hidden||open()||Date.now()-loadedAt<60000) return;
+  fetchRemote().then(function(rem){
+    if(open()) return;
+    state=rem.data;
+    sha=rem.sha;
+    loadedAt=Date.now();
+    render();
+  }).catch(function(){});
+});
+if(window.ResizeObserver){
+  new ResizeObserver(function(){
+    requestAnimationFrame(function(){
+      if(!state.months.length||$('app').hidden) return;
+      var w=Math.max(280,Math.floor($('chart').clientWidth));
+      if(w!==chartWidth) renderChart(balances());
+    });
+  }).observe($('chart'));
+}
+token=getToken();
+if(token) enter();
+else show('login');
+})();
+</script>
+</body>
+</html>
